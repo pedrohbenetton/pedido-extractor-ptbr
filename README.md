@@ -30,7 +30,7 @@ Exact match no conjunto difícil, por categoria:
 | quantidade_extenso | 0% | 62,5% |
 | correcao | 0% | **25%** |
 
-Leitura honesta: o teste sintético vem do mesmo gerador do treino, então 99,7% mostra que o formato foi aprendido, não que o problema está resolvido. O número que importa é o do conjunto difícil. A fraqueza principal é a **correção no meio da frase** ("2 coxinhas, ah não, 3"), que o gerador sintético não cobre. Com 60 casos (7 ou 8 por categoria), cada caso vale cerca de 1,7 ponto no total e 12 a 14 pontos numa categoria, e é uma única execução com uma única seed: trate as diferenças pequenas como ruído.
+Leitura honesta: o teste sintético vem do mesmo gerador do treino, então 99,7% mostra que o formato foi aprendido, não que o problema está resolvido. O número que importa é o do conjunto difícil. A fraqueza principal é a **correção no meio da frase** ("2 coxinhas, ah não, 3"), que o gerador sintético não cobre. Com 60 casos (6 a 8 por categoria), cada caso vale cerca de 1,7 ponto no total e 12 a 17 pontos numa categoria, e é uma única execução com uma única seed: trate as diferenças pequenas como ruído.
 
 ## Status
 
