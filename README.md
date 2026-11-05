@@ -15,7 +15,8 @@ sintéticos e num conjunto difícil escrito à mão.
 | Spec, schema, métricas, gerador sintético | pronto (testes passando) |
 | Conjunto difícil (60 casos, 8 categorias) | pronto, revisão humana pendente |
 | Treino QLoRA e avaliação no Colab/Kaggle | script e notebook prontos, **ainda não executados** |
-| Resultados, comparação com LLM de API, modelo no Hugging Face | pendentes |
+| Baseline com LLM de API (`eval_api`, com latência, tokens e custo) | pronto, **ainda não executado** |
+| Resultados reais, modelo no Hugging Face | pendentes |
 
 Nenhum número de desempenho é divulgado aqui antes de ser medido.
 
@@ -33,6 +34,14 @@ uv run pytest                        # testes (sem GPU)
 uv run python scripts/build_hard_test.py
 ```
 Treino e avaliação: `notebooks/train_colab.ipynb` (GPU T4).
+
+Baseline com LLM de API (gasta dinheiro; use `--limit` para um teste barato primeiro):
+```bash
+uv sync --extra api
+uv run python -m pedido_extractor.eval_api --model claude-haiku-5-5 --limit 100 --price-in <US$/1M> --price-out <US$/1M>
+uv run python -m pedido_extractor.eval_api --model claude-opus-5-5 --price-in <US$/1M> --price-out <US$/1M>
+```
+Os preços são informados por quem roda (consulte a tabela oficial); o relatório inclui latência p95, tokens e custo.
 
 ## Limites conhecidos
 - O treino usa dados de template: espera-se nota alta no teste sintético e queda no difícil, principalmente em correções e quantidade por extenso. O relatório mostra isso por categoria.

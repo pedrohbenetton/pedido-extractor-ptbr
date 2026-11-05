@@ -6,6 +6,7 @@ requires-python = ">=3.11"
 dependencies = ["pydantic>=2.7"]
 
 [project.optional-dependencies]
+api = ["anthropic>=1.0"]
 train = ["transformers", "peft", "trl", "datasets", "accelerate", "bitsandbytes"]
 
 [dependency-groups]
@@ -27,4 +28,4 @@ line-length = 100
 
 [tool.coverage.run]
 # exigem GPU/transformers; exercitados pelo notebook, não pelo pytest
-omit = ["*/hf_runtime.py", "*/eval_hf.py"]
+omit = ["*/hf_runtime.py", "*/eval_hf.py", "*/eval_api.py"]
