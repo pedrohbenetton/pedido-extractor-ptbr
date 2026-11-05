@@ -40,13 +40,14 @@ Leitura honesta: o teste sintético vem do mesmo gerador do treino, então 99,7%
 | Conjunto difícil (60 casos, 8 categorias) | pronto, revisão humana pendente |
 | Treino QLoRA e avaliação (base vs LoRA) | **executado** no Colab (T4) |
 | Baseline com LLM de API (`eval_api`, com latência, tokens e custo) | pronto, **ainda não executado** |
-| Segunda versão com correções/typos/quantidades no gerador | planejada |
+| Segunda versão com correções/typos/quantidades no gerador | gerador pronto, **treino v2 ainda não executado** |
 | Adapter no Hugging Face | pendente |
 
 ## Como funciona
 - `SPEC.md`: requisitos e métricas (escritos antes do código).
 - `schema.py`: `Pedido`/`Item` (Pydantic, `extra="forbid"`) e `parse_pedido` tolerante a texto em volta do JSON.
 - `data.py`: gerador sintético determinístico; observações coerentes com cada item, plurais no texto e singular no rótulo; splits sem vazamento.
+- `data.py --augment` (perfil v2): correção de quantidade no meio da frase, item pedido e depois cancelado ou trocado, typos (letra trocada, omitida, dobrada, erro fonético) e quantidade por extenso (dúzia, meia dúzia, par, cinco a dez). Os marcadores e frases são diferentes dos do conjunto difícil, e um teste garante que nenhum texto do conjunto difícil é gerado.
 - `data/hard_test.jsonl` (fonte: `scripts/build_hard_test.py`): correções, gíria, erros de digitação, ordem confusa, negação, quantidade por extenso, itens fora do cardápio, restrição + pagamento. **Nunca entra no treino.**
 - `metrics.py` / `evaluation.py`: JSON válido, exact match, F1 por item, acerto de pagamento, quebra por categoria.
 
@@ -67,5 +68,6 @@ uv run python -m pedido_extractor.eval_api --model claude-opus-5-5 --price-in <U
 Os preços são informados por quem roda (consulte a tabela oficial); o relatório inclui latência p95, tokens e custo.
 
 ## Limites conhecidos
+- Na v2 as categorias `correcao`, `typo` e `quantidade_extenso` deixam de ser totalmente "fora da distribuição": o gerador ensina esses conceitos. Uma melhora ali mede em parte o que foi ensinado de propósito, não generalização livre.
 - O treino usa dados de template: a queda do sintético (99,7%) para o difícil (71,7%) mostra a distância entre dado gerado e linguagem real, e se concentra em correções, typos e quantidade por extenso.
 - Os gabaritos do conjunto difícil foram escritos por mim com ajuda de IA e ainda sem revisão externa. Alguns casos são ambíguos (observações compostas, "bem gelado"). São decisões de convenção (ex.: dúzia = 12, "vr" = `vale_refeicao`).
