@@ -37,3 +37,41 @@ def test_flags_de_precisao_sao_exclusivas():
 
     assert precision_flags("fp16") == {"fp16": True, "bf16": False}
     assert precision_flags("bf16") == {"fp16": False, "bf16": True}
+
+
+class _Tensor:
+    def __init__(self, dtype):
+        self.dtype = dtype
+
+    def float(self):
+        return _Tensor("float32")
+
+
+class _Param:
+    def __init__(self, dtype, requires_grad):
+        self.data = _Tensor(dtype)
+        self.requires_grad = requires_grad
+
+
+class _Model:
+    def __init__(self, params):
+        self._params = params
+
+    def parameters(self):
+        return iter(self._params)
+
+
+def test_cast_trainable_to_fp32_so_mexe_nos_treinaveis():
+    from pedido_extractor.train import cast_trainable_to_fp32
+
+    lora, congelado = _Param("bfloat16", True), _Param("float16", False)
+    n = cast_trainable_to_fp32(_Model([lora, congelado]))
+    assert n == 1
+    assert lora.data.dtype == "float32" and congelado.data.dtype == "float16"
+
+
+def test_resumo_de_dtypes_dos_treinaveis():
+    from pedido_extractor.train import trainable_dtypes
+
+    params = [_Param("bfloat16", True), _Param("bfloat16", True), _Param("float32", True), _Param("x", False)]
+    assert trainable_dtypes(_Model(params)) == {"bfloat16": 2, "float32": 1}

@@ -57,6 +57,25 @@ def precision_flags(precision: str) -> dict[str, bool]:
     return {"fp16": precision == "fp16", "bf16": precision == "bf16"}
 
 
+def trainable_dtypes(model) -> dict[str, int]:
+    out: dict[str, int] = {}
+    for p in model.parameters():
+        if p.requires_grad:
+            k = str(p.data.dtype).removeprefix("torch.")
+            out[k] = out.get(k, 0) + 1
+    return out
+
+
+def cast_trainable_to_fp32(model) -> int:
+    """GradScaler (fp16) não faz unscale de gradientes bf16; adapters LoRA devem ser fp32."""
+    n = 0
+    for p in model.parameters():
+        if p.requires_grad:
+            p.data = p.data.float()
+            n += 1
+    return n
+
+
 def _to_prompt_completion(row: dict) -> dict:
     *prompt, answer = row["messages"]
     return {"prompt": prompt, "completion": [answer]}
@@ -92,6 +111,11 @@ def main(argv: list[str] | None = None) -> None:
             seed=cfg.seed, report_to="none", **precision_flags(current_precision()),
         ),
     )
+    precision = current_precision()
+    print(f"precisão={precision} | dtypes treináveis antes: {trainable_dtypes(trainer.model)}")
+    if precision == "fp16":
+        cast_trainable_to_fp32(trainer.model)
+        print(f"dtypes treináveis depois: {trainable_dtypes(trainer.model)}")
     trainer.train()
     trainer.save_model(cfg.out_dir)
 
