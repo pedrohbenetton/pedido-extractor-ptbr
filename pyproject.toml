@@ -1,0 +1,30 @@
+[project]
+name = "pedido-extractor-ptbr"
+version = "0.1.0"
+description = "Fine-tuning LoRA de um LLM pequeno para extrair pedidos de delivery em PT-BR como JSON validado."
+requires-python = ">=3.11"
+dependencies = ["pydantic>=2.7"]
+
+[project.optional-dependencies]
+train = ["transformers", "peft", "trl", "datasets", "accelerate", "bitsandbytes"]
+
+[dependency-groups]
+dev = ["pytest>=8", "pytest-cov", "ruff"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/pedido_extractor"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+
+[tool.ruff]
+line-length = 100
+
+[tool.coverage.run]
+# exigem GPU/transformers; exercitados pelo notebook, não pelo pytest
+omit = ["*/hf_runtime.py", "*/eval_hf.py"]
