@@ -20,3 +20,20 @@ def test_rejeita_valores_invalidos():
         TrainConfig(lora_r=0)
     with pytest.raises(ValueError):
         TrainConfig(epochs=0)
+
+
+@pytest.mark.parametrize(
+    ("cc_major", "esperado"),
+    [(7, "fp16"), (7.5, "fp16"), (8, "bf16"), (9, "bf16"), (None, "fp16")],
+)
+def test_precisao_pela_capacidade_da_gpu(cc_major, esperado):
+    from pedido_extractor.hf_runtime import precision_for
+
+    assert precision_for(cc_major) == esperado
+
+
+def test_flags_de_precisao_sao_exclusivas():
+    from pedido_extractor.train import precision_flags
+
+    assert precision_flags("fp16") == {"fp16": True, "bf16": False}
+    assert precision_flags("bf16") == {"fp16": False, "bf16": True}

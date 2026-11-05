@@ -53,6 +53,10 @@ def parse_args(argv: list[str] | None = None) -> TrainConfig:
     )
 
 
+def precision_flags(precision: str) -> dict[str, bool]:
+    return {"fp16": precision == "fp16", "bf16": precision == "bf16"}
+
+
 def _to_prompt_completion(row: dict) -> dict:
     *prompt, answer = row["messages"]
     return {"prompt": prompt, "completion": [answer]}
@@ -64,7 +68,7 @@ def main(argv: list[str] | None = None) -> None:
     from peft import LoraConfig
     from trl import SFTConfig, SFTTrainer
 
-    from .hf_runtime import load
+    from .hf_runtime import current_precision, load
 
     model, tok = load(cfg.model, load_in_4bit=cfg.load_in_4bit)
     ds = load_dataset(
@@ -85,7 +89,7 @@ def main(argv: list[str] | None = None) -> None:
             per_device_train_batch_size=cfg.per_device_batch,
             gradient_accumulation_steps=cfg.grad_accum, max_length=cfg.max_seq_len,
             eval_strategy="epoch", save_strategy="epoch", logging_steps=20,
-            fp16=True, seed=cfg.seed, report_to="none",
+            seed=cfg.seed, report_to="none", **precision_flags(current_precision()),
         ),
     )
     trainer.train()
