@@ -1,6 +1,6 @@
 # pedido-extractor-ptbr
 
-[![CI](https://github.com/pedrohbenetton/pedido-extractor-ptbr/actions/workflows/ci.yml/badge.svg)](https://github.com/pedrohbenetton/pedido-extractor-ptbr/actions/workflows/ci.yml)
+[![CI](https://github.com/pedrohbenetton/pedido-extractor-ptbr/actions/workflows/ci.yml/badge.svg)](https://github.com/pedrohbenetton/pedido-extractor-ptbr/actions/workflows/ci.yml) [![Hugging Face](https://img.shields.io/badge/🤗%20Hugging%20Face-adapter%20v2-yellow)](https://huggingface.co/pedrohbenetton/pedido-extractor-ptbr-lora)
 
 Fine-tuning **QLoRA** de um LLM pequeno (Qwen2.5-1.5B-Instruct) para transformar mensagens livres de
 pedido de delivery em PT-BR em **JSON validado por schema**, com avaliação separada em dados
@@ -50,7 +50,7 @@ Leitura honesta:
 | Treino QLoRA e avaliação (base vs LoRA) | **executado** no Colab (T4) |
 | Baseline com LLM de API (`eval_api`, com latência, tokens e custo) | pronto, **ainda não executado** |
 | Segunda versão com correções/typos/quantidades no gerador | **executado** (exact match difícil 71,7% → 90,0%) |
-| Adapter no Hugging Face | pendente |
+| Adapter no Hugging Face | publicado (v2): https://huggingface.co/pedrohbenetton/pedido-extractor-ptbr-lora |
 
 ## Como funciona
 - `SPEC.md`: requisitos e métricas (escritos antes do código).
