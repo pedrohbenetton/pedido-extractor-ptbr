@@ -17,19 +17,20 @@ Qwen2.5-1.5B-Instruct em 4 bits, QLoRA (r=16, 2 épocas, 6.000 exemplos sintéti
 | base (sem fine-tuning) | 48,8% | 1,8% | 68,3% | 3,3% | 12,8% |
 | + LoRA v1 | 99,7% | 99,7% | 100% | 71,7% | 80,5% |
 | + LoRA v2 (dados com correções, typos, extenso) | 100% | 99,8% | 100% | **90,0%** | 93,4% |
+| Claude Haiku 5.5 via API (zero-shot, esforço baixo; sintético só n=20) | 100% | 40% | 100% | 68,3% | 84,2% |
 
 Exact match no conjunto difícil, por categoria:
 
-| Categoria | base | LoRA v1 | LoRA v2 |
-|---|---|---|---|
-| correcao | 0% | 25% | 75% |
-| typo | 0% | 62,5% | 100% |
-| quantidade_extenso | 0% | 62,5% | 100% |
-| negacao | 0% | 87,5% | 100% |
-| ordem_confusa | 12,5% | 75% | 87,5% |
-| giria | 12,5% | 87,5% | 87,5% |
-| restricao_pagamento | 0% | 83,3% | 83,3% |
-| fora_do_cardapio | 0% | 100% | 83,3% |
+| Categoria | base | LoRA v1 | LoRA v2 | Haiku 5.5 (API) |
+|---|---|---|---|---|
+| correcao | 0% | 25% | 75% | 100% |
+| typo | 0% | 62,5% | 100% | 37,5% |
+| quantidade_extenso | 0% | 62,5% | 100% | 100% |
+| negacao | 0% | 87,5% | 100% | 50% |
+| ordem_confusa | 12,5% | 75% | 87,5% | 50% |
+| giria | 12,5% | 87,5% | 87,5% | 62,5% |
+| restricao_pagamento | 0% | 83,3% | 83,3% | 66,7% |
+| fora_do_cardapio | 0% | 100% | 83,3% | 83,3% |
 
 Leitura honesta:
 - **Teste sintético:** vem do mesmo gerador do treino, então perto de 100% mostra que o formato foi aprendido, não que o problema está resolvido. O número que importa é o do conjunto difícil.
@@ -37,6 +38,7 @@ Leitura honesta:
 - **v2:** só os dados mudaram (mesmo modelo, hiperparâmetros e teste). O gerador passou a cobrir correções, itens cancelados ou trocados, typos e quantidade por extenso, com marcadores e frases diferentes dos do teste difícil. O exact match no difícil foi de 71,7% para 90,0%.
 - **Uma categoria piorou:** `fora_do_cardapio` foi de 100% para 83,3%, ou seja, um caso a menos entre seis.
 - **Ressalva:** o v2 ensina de propósito conceitos que o teste cobra, então parte do ganho em correção, typo e extenso é o que foi ensinado, não generalização livre.
+- **Haiku 5.5 (API):** rodado zero-shot (só o prompt de sistema, sem exemplos), esforço baixo, nos 60 casos difíceis e em 20 exemplos sintéticos. Em 80 chamadas, 0 erros, latência média de cerca de 1,0 s (p95 1,8 s). Ele erra sobretudo em convenções do rótulo (nome no singular, observação canônica "sem X"), que o fine-tuning ensina e o prompt sozinho não, então a comparação mede em parte aderência à convenção. Uma versão com exemplos no prompt seria mais justa e ainda não foi feita. O custo em dólares não foi calculado porque os preços não foram informados.
 - **Amostra pequena:** são 6 a 8 casos por categoria, então cada caso vale cerca de 1,7 ponto no total e 12 a 17 pontos numa categoria. É uma única execução com uma única seed: trate as diferenças pequenas como ruído.
 
 ## Status
