@@ -39,7 +39,7 @@ SYSTEM = (
     '"restricoes": [str], "pagamento": "pix"|"dinheiro"|"credito"|"debito"|"vale_refeicao"|null}.'
 )
 msgs = [{"role": "system", "content": SYSTEM},
-        {"role": "user", "content": "me vê 1 x-bacon sem cebola e 2 cocas, pago no pix"}]
+        {"role": "user", "content": "me vê 1 x-bacon sem cebola e 2 refrigerantes lata, pago no pix"}]
 ids = tok.apply_chat_template(msgs, add_generation_prompt=True, return_tensors="pt").to(model.device)
 out = model.generate(ids, max_new_tokens=256, do_sample=False)
 print(tok.decode(out[0][ids.shape[1]:], skip_special_tokens=True))
