@@ -8,6 +8,9 @@ sintéticos e num conjunto difícil escrito à mão.
 
 > "2 pizzas de calabresa sem cebola, ah não, 3. pago no pix" → `{"itens":[{"nome":"pizza de calabresa","quantidade":3,"observacoes":["sem cebola"]}],"restricoes":[],"pagamento":"pix"}`
 
+
+> **Avaliação complementar:** o mesmo adapter foi avaliado no [ptbr-llm-bench](https://github.com/pedrohbenetton/ptbr-llm-bench) (intenção, ambiguidade e extração). Ele melhora na extração para a qual foi treinado, mas **perde cerca de 12 pontos** nas outras tarefas frente ao modelo base (uma execução, amostras pequenas: indício, não prova).
+
 ## Resultados
 
 Qwen2.5-1.5B-Instruct em 4 bits, QLoRA (r=16, 2 épocas, 6.000 exemplos sintéticos), uma execução, T4. Teste sintético com 600 exemplos; teste difícil com 60 casos escritos à mão, nunca usados no treino.
