@@ -51,7 +51,7 @@ Leitura honesta:
 | Spec, schema, métricas, gerador sintético | pronto (testes passando) |
 | Conjunto difícil (60 casos, 8 categorias) | pronto, revisão humana pendente |
 | Treino QLoRA e avaliação (base vs LoRA) | **executado** no Colab (T4) |
-| Baseline com LLM de API (`eval_api`, com latência, tokens e custo) | pronto, **ainda não executado** |
+| Baseline com LLM de API (`eval_api`, com latência, tokens e custo) | **executado** só com Haiku 5.5 zero-shot (60 difíceis + 20 sintéticos); Opus e versão com exemplos não |
 | Segunda versão com correções/typos/quantidades no gerador | **executado** (exact match difícil 71,7% → 90,0%) |
 | Adapter no Hugging Face | publicado (v2): https://huggingface.co/pedrohbenetton/pedido-extractor-ptbr-lora |
 
