@@ -9,7 +9,7 @@ sintéticos e num conjunto difícil escrito à mão.
 > "2 pizzas de calabresa sem cebola, ah não, 3. pago no pix" → `{"itens":[{"nome":"pizza de calabresa","quantidade":3,"observacoes":["sem cebola"]}],"restricoes":[],"pagamento":"pix"}`
 
 
-> **Avaliação complementar:** o mesmo adapter foi avaliado no [ptbr-llm-bench](https://github.com/pedrohbenetton/ptbr-llm-bench) (intenção, ambiguidade e extração). Ele melhora na extração para a qual foi treinado, mas **perde cerca de 12 pontos** nas outras tarefas frente ao modelo base (uma execução, amostras pequenas: indício, não prova).
+> **Avaliação complementar:** os adapters v1 e v2 foram avaliados também no [ptbr-llm-bench](https://github.com/pedrohbenetton/ptbr-llm-bench) (intenção, ambiguidade e extração). O v2 confirma 90,0% de exact match no conjunto difícil, contra 75,0% do Haiku 5.5 zero-shot nessa rodada, e preserva mais as outras tarefas que o v1 (uma execução, amostras pequenas).
 
 ## Resultados
 
