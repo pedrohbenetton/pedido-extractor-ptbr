@@ -2,7 +2,7 @@
 
 # Fine-tuning de um modelo de 1,5B para pedidos de delivery em PT-BR: o que funcionou, o que errei e o que ainda não sei
 
-**Resumo.** Ajustei com QLoRA um Qwen2.5-1.5B-Instruct para transformar mensagens livres de pedido de delivery em JSON validado. No conjunto difícil que escrevi à mão, o exact match foi de 3,3% (modelo base) para 71,7% (v1) e 90,0% (v2), contra 68,3% a 75,0% de um Claude Haiku 5.5 zero-shot (a API não permite fixar a aleatoriedade, e as duas execuções deram valores diferentes). Depois montei um pequeno benchmark de PT-BR informal para ver o que o fine-tuning custava nas outras tarefas. Pelo caminho, cometi três erros de medição, e conto cada um aqui, porque eles ensinaram mais do que os acertos.
+**Resumo.** Ajustei com QLoRA um Qwen2.5-1.5B-Instruct para transformar mensagens livres de pedido de delivery em JSON validado. No conjunto difícil que montei, o exact match foi de 3,3% (modelo base) para 71,7% (v1) e 90,0% (v2), contra 68,3% a 75,0% de um Claude Haiku 5.5 zero-shot (a API não permite fixar a aleatoriedade, e as duas execuções deram valores diferentes). Depois montei um pequeno benchmark de PT-BR informal para ver o que o fine-tuning custava nas outras tarefas. Pelo caminho, cometi três erros de medição, e conto cada um aqui, porque eles ensinaram mais do que os acertos.
 
 Código, dados e testes: [pedido-extractor-ptbr](https://github.com/pedrohbenetton/pedido-extractor-ptbr) · Benchmark: [ptbr-llm-bench](https://github.com/pedrohbenetton/ptbr-llm-bench) · Adapter: [Hugging Face](https://huggingface.co/pedrohbenetton/pedido-extractor-ptbr-lora)
 
@@ -24,7 +24,7 @@ O desafio não é o formato. É a língua: correção no meio da frase ("ah não
 
 **Treino e teste sintético.** Um gerador determinístico cria o texto e o rótulo ao mesmo tempo, então não há ruído de anotação. Gerei 6.000 exemplos: 4.800 para treino, 600 para validação e 600 para teste. O problema desse teste é que ele vem do mesmo gerador do treino: perto de 100% mostra que o formato foi aprendido, não que o problema está resolvido.
 
-**Conjunto difícil.** 60 casos escritos à mão, em 8 categorias (correção, gíria, typo, ordem confusa, negação, quantidade por extenso, item fora do cardápio, restrição com pagamento). Eles nunca entram no treino, e um teste automático garante que nenhum texto deles é gerado. Dois limites que preciso dizer: os gabaritos foram escritos por mim com ajuda de IA e **sem revisão externa**, e alguns casos são ambíguos (observações compostas, "bem gelado"). Convenções como "dúzia = 12" são decisões minhas.
+**Conjunto difícil.** 60 casos escritos por mim, em 8 categorias (correção, gíria, typo, ordem confusa, negação, quantidade por extenso, item fora do cardápio, restrição com pagamento). Eles nunca entram no treino, e um teste automático garante que nenhum texto deles é gerado. Dois limites que preciso dizer: os gabaritos foram escritos por mim com ajuda de IA e **sem revisão externa**, e alguns casos são ambíguos (observações compostas, "bem gelado"). Convenções como "dúzia = 12" são decisões minhas.
 
 O número que importa é o do conjunto difícil.
 
@@ -53,7 +53,7 @@ Rodei o Claude Haiku 5.5 via API, zero-shot (só o prompt de sistema, sem exempl
 
 ## O benchmark: o que o fine-tuning custou?
 
-Um adapter treinado para uma tarefa pode piorar nas outras. Para olhar isso, montei o [ptbr-llm-bench](https://github.com/pedrohbenetton/ptbr-llm-bench): três tarefas escritas à mão (intenção de mensagem de cliente, 48 itens; interpretação ambígua com gíria, ironia e regionalismo, 40 itens; e a extração de pedido, 60 itens).
+Um adapter treinado para uma tarefa pode piorar nas outras. Para olhar isso, montei o [ptbr-llm-bench](https://github.com/pedrohbenetton/ptbr-llm-bench): três tarefas escritas com ajuda de IA e revisadas com apoio externo (intenção de mensagem de cliente, 48 itens; interpretação ambígua com gíria, ironia e regionalismo, 40 itens; e a extração de pedido, 60 itens).
 
 | Modelo | Média | extração | intenção | ambiguidade (rígida / tolerante) |
 |---|---|---|---|---|
