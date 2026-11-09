@@ -2,7 +2,7 @@
 
 # Fine-tuning de um modelo de 1,5B para pedidos de delivery em PT-BR: o que funcionou, o que errei e o que ainda não sei
 
-**Resumo.** Ajustei com QLoRA um Qwen2.5-1.5B-Instruct para transformar mensagens livres de pedido de delivery em JSON validado. No conjunto difícil que montei, o exact match foi de 3,3% (modelo base) para 71,7% (v1) e 90,0% (v2), contra 68,3% a 75,0% de um Claude Haiku 5.5 zero-shot (a API não permite fixar a aleatoriedade, e as duas execuções deram valores diferentes). Depois montei um pequeno benchmark de PT-BR informal para ver o que o fine-tuning custava nas outras tarefas. Pelo caminho, cometi três erros de medição, e conto cada um aqui, porque eles ensinaram mais do que os acertos.
+**Resumo.** Ajustei com QLoRA um Qwen2.5-1.5B-Instruct para transformar mensagens livres de pedido de delivery em JSON validado. No conjunto difícil que montei, o exact match foi de 3,3% (modelo base) para 71,7% (v1) e 90,0% (v2), contra 68,3% a 75,0% de um Claude Haiku 5.5 zero-shot (a API não permite fixar a aleatoriedade, e as duas execuções deram valores diferentes). Depois montei um pequeno benchmark de PT-BR informal para ver o que o fine-tuning custava nas outras tarefas. Pelo caminho, cometi três erros, e conto cada um aqui, porque eles ensinaram mais do que os acertos.
 
 Código, dados e testes: [pedido-extractor-ptbr](https://github.com/pedrohbenetton/pedido-extractor-ptbr) · Benchmark: [ptbr-llm-bench](https://github.com/pedrohbenetton/ptbr-llm-bench) · Adapter: [Hugging Face](https://huggingface.co/pedrohbenetton/pedido-extractor-ptbr-lora)
 
@@ -66,7 +66,7 @@ Um adapter treinado para uma tarefa pode piorar nas outras. Para olhar isso, mon
 
 O que eu leio daqui, com cuidado:
 
-- O v1 perdia cerca de 12 pontos na intenção e na ambiguidade contra o base. O v2 **recupera a intenção** (64,6 contra 62,5, uma diferença de um item) e ainda perde na ambiguidade tolerante (três itens). Ou seja, o custo de especialização não é uniforme, e eu não sei explicar por que o v2 preserva mais.
+- O v1 perdia cerca de 12 pontos na intenção e na ambiguidade contra o base. O v2 **chega ao nível do base na intenção** (64,6 contra 62,5, uma diferença de um item) e ainda perde na ambiguidade tolerante (três itens). Ou seja, o custo de especialização não é uniforme, e eu não sei explicar por que o v2 preserva mais.
 - Intenção e ambiguidade não separam modelos fortes: o Haiku passa de 97%. Hoje elas só distinguem modelos pequenos.
 - São uma execução, 40 a 60 itens por tarefa. Diferenças de um a três itens são ruído.
 
