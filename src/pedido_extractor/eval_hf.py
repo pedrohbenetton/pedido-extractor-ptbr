@@ -11,7 +11,7 @@ from .evaluation import render_report, run_eval
 from .hard import load_hard_test
 
 
-def main(argv: list[str] | None = None) -> None:
+def build_parser() -> argparse.ArgumentParser:
     ap = argparse.ArgumentParser()
     ap.add_argument("--model", default="Qwen/Qwen2.5-1.5B-Instruct")
     ap.add_argument("--adapter", default=None, help="caminho ou repo HF do adapter LoRA")
@@ -21,13 +21,22 @@ def main(argv: list[str] | None = None) -> None:
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--batch-size", type=int, default=16)
     ap.add_argument("--no-4bit", action="store_true")
-    a = ap.parse_args(argv)
+    ap.add_argument(
+        "--constrained",
+        action="store_true",
+        help="decodificação restrita ao JSON schema do Pedido (xgrammar)",
+    )
+    return ap
+
+
+def main(argv: list[str] | None = None) -> None:
+    a = build_parser().parse_args(argv)
 
     from .hf_runtime import load, make_generate_fn
 
     m, tok = load(a.model, a.adapter, load_in_4bit=not a.no_4bit)
     teste = build_splits(a.n, a.seed)["test"]
-    r = run_eval(make_generate_fn(m, tok), teste, load_hard_test(), batch_size=a.batch_size)
+    r = run_eval(make_generate_fn(m, tok, constrained=a.constrained), teste, load_hard_test(), batch_size=a.batch_size)
     out = Path(a.out)
     out.mkdir(parents=True, exist_ok=True)
     (out / f"{a.name}.json").write_text(json.dumps(r, ensure_ascii=False, indent=2), encoding="utf-8")

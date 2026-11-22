@@ -44,8 +44,18 @@ def load(model: str, adapter: str | None = None, load_in_4bit: bool = True):
     return m, tok
 
 
-def make_generate_fn(model, tok, max_new_tokens: int = 256) -> GenerateFn:
+def make_generate_fn(
+    model, tok, max_new_tokens: int = 256, constrained: bool = False
+) -> GenerateFn:
     import torch
+
+    new_processor = None
+    if constrained:
+        import xgrammar as xgr
+
+        from .constrained import make_logits_processor_factory
+
+        new_processor = make_logits_processor_factory(xgr, tok, model.config.vocab_size)
 
     def gen(batch):
         prompts = [
@@ -53,7 +63,10 @@ def make_generate_fn(model, tok, max_new_tokens: int = 256) -> GenerateFn:
         ]
         enc = tok(prompts, return_tensors="pt", padding=True).to(model.device)
         with torch.no_grad():
-            out = model.generate(**enc, max_new_tokens=max_new_tokens, do_sample=False)
+            extra = {"logits_processor": [new_processor()]} if new_processor else {}
+            out = model.generate(
+                **enc, max_new_tokens=max_new_tokens, do_sample=False, **extra
+            )
         return tok.batch_decode(out[:, enc["input_ids"].shape[1] :], skip_special_tokens=True)
 
     return gen
