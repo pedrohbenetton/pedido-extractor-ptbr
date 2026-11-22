@@ -31,7 +31,7 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 base = "Qwen/Qwen2.5-1.5B-Instruct"
 tok = AutoTokenizer.from_pretrained(base)
 model = AutoModelForCausalLM.from_pretrained(base, torch_dtype=torch.float16, device_map="auto")
-model = PeftModel.from_pretrained(model, "SEU_USUARIO/pedido-extractor-ptbr-lora")
+model = PeftModel.from_pretrained(model, "pedrohbenetton/pedido-extractor-ptbr-lora")
 
 SYSTEM = (
     "Você extrai pedidos de delivery em português do Brasil. Responda somente com um JSON "
