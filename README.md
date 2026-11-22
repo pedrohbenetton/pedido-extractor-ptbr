@@ -18,8 +18,10 @@ Qwen2.5-1.5B-Instruct em 4 bits, QLoRA (r=16, 2 épocas, 6.000 exemplos sintéti
 | Modelo | Sintético: JSON válido | Sintético: exact match | Difícil: JSON válido | Difícil: exact match | Difícil: F1 de itens |
 |---|---|---|---|---|---|
 | base (sem fine-tuning) | 48,8% | 1,8% | 68,3% | 3,3% | 12,8% |
+| base com geração restrita ao schema | 96,8% | 2,5% | 100% | 3,3% | 8,2% |
 | + LoRA v1 | 99,7% | 99,7% | 100% | 71,7% | 80,5% |
 | + LoRA v2 (dados com correções, typos, extenso) | 100% | 99,8% | 100% | **90,0%** | 93,4% |
+| + LoRA v2 com geração restrita ao schema | 100% | 99,8% | 100% | 90,0% | 93,4% |
 | Claude Haiku 5.5 via API (zero-shot, esforço baixo; sintético só n=20) | 100% | 40% | 100% | 68,3% | 84,2% |
 
 Exact match no conjunto difícil, por categoria:
@@ -36,6 +38,8 @@ Exact match no conjunto difícil, por categoria:
 | fora_do_cardapio | 0% | 100% | 83,3% | 83,3% |
 
 Leitura honesta:
+- **Formato vs. extração:** o base falha em JSON válido em 31,7% dos casos difíceis, então o 3,3% dele podia ser só problema de formato. Para separar, rodamos base e LoRA v2 com decodificação restrita ao JSON schema do `Pedido` (xgrammar, `eval_hf --constrained`). Com o JSON sempre válido, o base continua em 3,3% de exact match no difícil e o F1 de itens cai de 12,8% para 8,2%; o LoRA v2 não muda. O ganho é de extração, não de formato. (Sugestão feita na [discussão #1](https://huggingface.co/pedrohbenetton/pedido-extractor-ptbr-lora/discussions/1) do adapter.)
+- **96,8% de JSON válido no sintético com gramática:** a gramática garante o formato, mas não que o JSON termine dentro do limite de 256 tokens; os casos restantes provavelmente são saídas cortadas (não verificado caso a caso).
 - **Teste sintético:** vem do mesmo gerador do treino, então perto de 100% mostra que o formato foi aprendido, não que o problema está resolvido. O número que importa é o do conjunto difícil.
 - **v1:** a fraqueza principal foi a **correção no meio da frase** ("2 coxinhas, ah não, 3"), que o gerador não cobria; typo e quantidade por extenso (dúzia, par) também ficaram abaixo.
 - **v2:** só os dados mudaram (mesmo modelo, hiperparâmetros e teste). O gerador passou a cobrir correções, itens cancelados ou trocados, typos e quantidade por extenso, com marcadores e frases diferentes dos do teste difícil. O exact match no difícil foi de 71,7% para 90,0%.
@@ -53,6 +57,7 @@ Leitura honesta:
 | Treino QLoRA e avaliação (base vs LoRA) | **executado** no Colab (T4) |
 | Baseline com LLM de API (`eval_api`, com latência, tokens e custo) | **executado** só com Haiku 5.5 zero-shot (60 difíceis + 20 sintéticos); Opus e versão com exemplos não |
 | Segunda versão com correções/typos/quantidades no gerador | **executado** (exact match difícil 71,7% → 90,0%) |
+| Baseline com geração restrita ao schema (`--constrained`) | **executado** (base continua em 3,3% no difícil) |
 | Adapter no Hugging Face | publicado (v2): https://huggingface.co/pedrohbenetton/pedido-extractor-ptbr-lora |
 
 ## Como funciona

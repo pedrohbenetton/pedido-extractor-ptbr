@@ -60,7 +60,10 @@ Conjunto difícil: 60 casos escritos à mão, nunca usados no treino (8 categori
 | Modelo | JSON válido | Exact match | F1 de itens |
 |---|---|---|---|
 | Qwen2.5-1.5B-Instruct (sem fine-tuning) | 68,3% | 3,3% | 12,8% |
+| Qwen2.5-1.5B-Instruct com geração restrita ao schema | 100% | 3,3% | 8,2% |
 | + este adapter | 100% | **90,0%** | 93,4% |
+
+Com geração restrita ao JSON schema (xgrammar), o base passa a gerar sempre JSON válido e mesmo assim fica em 3,3% de exact match; o adapter com a mesma restrição continua em 90,0%. Ou seja, o ganho é de extração, não só de formato.
 
 No teste sintético (600 exemplos, mesmo gerador do treino): 100% de JSON válido e 99,8% de exact match, o que mostra que o formato foi aprendido, não que a tarefa está resolvida.
 
